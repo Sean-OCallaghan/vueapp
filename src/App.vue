@@ -1,19 +1,57 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h3>Type a Word to see its Rhymes</h3>
+    <form @submit.prevent="getRhymes">
+      <input type="text" name="word" placeHolder="word" />
+      <button>submit</button>
+    </form>
+    <h3>Type a Word to see What it sounds Like</h3>
+    <form @submit.prevent="getAdjectives">
+      <input type="text" name="word" placeHolder="word" />
+      <button>submit</button>
+    </form>
+    <WordList :wordList="list" />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import Vue from "vue";
+import axios from "axios";
+import VueAxios from "vue-axios";
+Vue.use(VueAxios, axios);
+import WordList from "./components/wordList";
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    WordList,
+  },
+  data() {
+    return {
+      name: "",
+      list: undefined,
+    };
+  },
+  methods: {
+    getRhymes(submitEvent) {
+      this.name = submitEvent.target.elements.word.value;
+      Vue.axios
+        .get(`https://api.datamuse.com/words?rel_rhy=` + this.name)
+        .then((resp) => {
+          this.list = resp.data;
+          console.warn(resp.data);
+        });
+    },
+    getAdjectives(submitEvent) {
+      this.name = submitEvent.target.elements.word.value;
+      Vue.axios
+        .get(`https://api.datamuse.com/words?sl=` + this.name)
+        .then((resp) => {
+          this.list = resp.data;
+          console.warn(resp.data);
+        });
+    },
+  },
+};
 </script>
 
 <style>
